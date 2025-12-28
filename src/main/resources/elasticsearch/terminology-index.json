@@ -1,0 +1,24 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "system":   { "type": "keyword" },
+      "version":  { "type": "keyword" },
+      "code":     { "type": "keyword" },
+
+      "display":  { "type": "text" },
+      "text":     { "type": "text" },
+
+      "term_norm": {
+        "type": "keyword",
+        "doc_values": true
+      },
+
+      "rank":   { "type": "integer" },
+      "active": { "type": "boolean" }
+    }
+  }
+}

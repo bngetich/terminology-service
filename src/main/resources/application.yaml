@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: terminology-service
+
+elasticsearch:
+  host: localhost
+  port: 9200
