@@ -2,7 +2,6 @@ package com.example.terminologyservice.importer;
 
 import com.example.terminologyservice.normalize.TermNormalizer;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
