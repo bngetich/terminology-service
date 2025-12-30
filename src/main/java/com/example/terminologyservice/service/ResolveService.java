@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,20 +158,33 @@ public class ResolveService {
     @SuppressWarnings("unchecked")
     private ResolveResponse buildResponse(List<Map<String, Object>> hits, String originalText) {
 
-        if (hits.size() == 1) {
-            Map<String, Object> src =
-                    (Map<String, Object>) hits.get(0).get("_source");
+
+        // Collapse by CODE
+        Map<String, Map<String, Object>> byCode = new LinkedHashMap<>();
+
+        for (Map<String, Object> hit : hits) {
+            Map<String, Object> src = (Map<String, Object>) hit.get("_source");
+            String code = (String) src.get("code");
+
+            // keep first occurrence (sorted by rank, so preferred terms win)
+            byCode.putIfAbsent(code, src);
+        }
+
+        // Exactly ONE unique concept
+        if (byCode.size() == 1) {
+            Map<String, Object> src = byCode.values().iterator().next();
             return ResolveResponse.matched(toCodeableConcept(src, originalText));
         }
 
+        // Multiple concepts -> ambiguous
         List<Map<String, Object>> candidates = new ArrayList<>();
-        for (Map<String, Object> hit : hits) {
-            Map<String, Object> src =
-                    (Map<String, Object>) hit.get("_source");
+        for (Map<String, Object> src : byCode.values()) {
             candidates.add(toCodeableConcept(src, originalText));
         }
+
         return ResolveResponse.ambiguous(candidates);
     }
+
 
 
     @SuppressWarnings("unchecked")
